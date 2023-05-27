@@ -94,8 +94,5 @@ set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property CFGBVS VCCO [current_design]
 
 create_generated_clock -name host_clock [get_pins Top_i/clk_wiz_0/inst/mmcm_adv_inst/CLKOUT0]
-create_generated_clock -name buildtop_reference_clock -source [get_pins -of [get_clocks host_clock]] [get_pins Top_i/firesim_wrapper_0/inst/firesim_top/top/sim/target/FireSim_/clockBridge_clocks_0_buffer/O] -divide_by 1
-set_multicycle_path 1 -setup -from [get_clocks buildtop_reference_clock] -to [get_clocks buildtop_reference_clock]
-set_multicycle_path 0 -hold  -from [get_clocks buildtop_reference_clock] -to [get_clocks buildtop_reference_clock]
 
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets Top_i/clk_wiz_0/inst/clk_out1]
+# set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets Top_i/clk_wiz_0/inst/clk_out1]

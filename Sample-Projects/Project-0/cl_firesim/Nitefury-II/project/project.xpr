@@ -201,11 +201,27 @@
           <Attr Name="ProcessingOrder" Val="EARLY"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/sources_1/imports/HDL/FireSim-generated.synthesis.xdc">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../common/Constraints/FireSim-generated.synthesis.xdc"/>
+          <Attr Name="ImportTime" Val="1659726646"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="ProcessingOrder" Val="EARLY"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/constrs_1/imports/constraints/normal.xdc">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../../common/Constraints/normal.xdc"/>
           <Attr Name="ImportTime" Val="1659726646"/>
           <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/HDL/FireSim-generated.implementation.xdc">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../common/Constraints/FireSim-generated.implementation.xdc"/>
+          <Attr Name="ImportTime" Val="1659726646"/>
           <Attr Name="UsedIn" Val="implementation"/>
         </FileInfo>
       </File>
