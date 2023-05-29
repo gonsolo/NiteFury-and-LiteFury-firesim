@@ -729,7 +729,7 @@ proc write_mig_file_Top_mig_7series_0_0 { str_mig_prj_filepath } {
    CONFIG.pf0_class_code_base {12} \
    CONFIG.pf0_class_code_interface {00} \
    CONFIG.pf0_class_code_sub {00} \
-   CONFIG.pf0_device_id {7011} \
+   CONFIG.pf0_device_id {903f} \
    CONFIG.pf0_msix_cap_pba_bir {BAR_3:2} \
    CONFIG.pf0_msix_cap_table_bir {BAR_3:2} \
    CONFIG.pf0_sub_class_interface_menu {All_currently_implemented_devices_except_VGA-compatible_devices} \
@@ -747,9 +747,10 @@ proc write_mig_file_Top_mig_7series_0_0 { str_mig_prj_filepath } {
    CONFIG.xdma_pcie_64bit_en {true} \
    CONFIG.xdma_pcie_prefetchable {true} \
    CONFIG.xdma_rnum_chnl {1} \
-   CONFIG.xdma_rnum_rids {16} \
+   CONFIG.xdma_rnum_rids {64} \
    CONFIG.xdma_sts_ports {false} \
    CONFIG.xdma_wnum_chnl {1} \
+   CONFIG.xdma_wnum_rids {32} \
  ] $xdma_0
 
   # Create instance: xlconstant_1, and set properties
