@@ -335,6 +335,7 @@ proc cr_bd_Top { parentCell firesim_freq } {
   xilinx.com:ip:xadc_wiz:3.3\
   xilinx.com:ip:xdma:4.1\
   xilinx.com:ip:xlslice:1.0\
+  xilinx.com:ip:axi_clock_converter:2.1\
   "
 
    set list_ips_missing ""
@@ -586,6 +587,8 @@ proc write_mig_file_Top_mig_7series_0_0 { str_mig_prj_filepath } {
    ] $sys_clk
 
 
+  set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_0 ]
+
   # Create ports
   set LED_A1 [ create_bd_port -dir O -from 0 -to 0 LED_A1 ]
   set LED_A2 [ create_bd_port -dir O -from 0 -to 0 LED_A2 ]
@@ -616,12 +619,12 @@ proc write_mig_file_Top_mig_7series_0_0 { str_mig_prj_filepath } {
    CONFIG.NUM_MI {1} \
  ] $axi_interconnect_0
 
-  # Create instance: axi_interconnect_1, and set properties
-  set axi_interconnect_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_1 ]
+  # Create instance: axi_clock_converter_1, and set properties
+  set axi_clock_converter_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_clock_converter:2.1 axi_clock_converter_1 ]
   set_property -dict [ list \
-   CONFIG.ENABLE_ADVANCED_OPTIONS {0} \
-   CONFIG.NUM_MI {1} \
- ] $axi_interconnect_1
+   CONFIG.SYNCHRONIZATION_STAGES {8} \
+ ] $axi_clock_converter_1
+
 
   # Create instance: axi_interconnect_2, and set properties
   set axi_interconnect_2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_2 ]
@@ -632,17 +635,8 @@ proc write_mig_file_Top_mig_7series_0_0 { str_mig_prj_filepath } {
   # Create instance: clk_wiz_0, and set properties
   set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
   set_property -dict [ list \
-   CONFIG.CLKIN1_JITTER_PS {80.0} \
-   CONFIG.CLKOUT1_JITTER {197.700} \
-   CONFIG.CLKOUT1_PHASE_ERROR {96.948} \
    CONFIG.CLKOUT1_REQUESTED_OUT_FREQ $firesim_freq \
-   CONFIG.MMCM_CLKFBOUT_MULT_F {8.000} \
-   CONFIG.MMCM_CLKIN1_PERIOD {8.000} \
-   CONFIG.MMCM_CLKOUT0_DIVIDE_F {100.000} \
-   CONFIG.PRIM_IN_FREQ {125.000} \
-   CONFIG.PRIM_SOURCE {Single_ended_clock_capable_pin} \
-   CONFIG.RESET_PORT {resetn} \
-   CONFIG.RESET_TYPE {ACTIVE_LOW} \
+   CONFIG.USE_LOCKED {false} \
  ] $clk_wiz_0
 
   # Create instance: const_true1, and set properties
@@ -747,10 +741,8 @@ proc write_mig_file_Top_mig_7series_0_0 { str_mig_prj_filepath } {
    CONFIG.xdma_pcie_64bit_en {true} \
    CONFIG.xdma_pcie_prefetchable {true} \
    CONFIG.xdma_rnum_chnl {1} \
-   CONFIG.xdma_rnum_rids {64} \
    CONFIG.xdma_sts_ports {false} \
    CONFIG.xdma_wnum_chnl {1} \
-   CONFIG.xdma_wnum_rids {32} \
  ] $xdma_0
 
   # Create instance: xlconstant_1, and set properties
@@ -792,34 +784,34 @@ proc write_mig_file_Top_mig_7series_0_0 { str_mig_prj_filepath } {
   # Create interface connections
   connect_bd_intf_net -intf_net S00_AXI_1 [get_bd_intf_pins axi_interconnect_2/S00_AXI] [get_bd_intf_pins firesim_wrapper_0/M_AXI_DDR0]
   connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_pins axi_interconnect_0/M00_AXI] [get_bd_intf_pins firesim_wrapper_0/S_AXI_CTRL]
-  connect_bd_intf_net -intf_net axi_interconnect_1_M00_AXI [get_bd_intf_pins axi_interconnect_1/M00_AXI] [get_bd_intf_pins firesim_wrapper_0/S_AXI_DMA]
+  connect_bd_intf_net -intf_net axi_clock_converter_1_M_AXI [get_bd_intf_pins axi_clock_converter_1/M_AXI] [get_bd_intf_pins firesim_wrapper_0/S_AXI_DMA]
   connect_bd_intf_net -intf_net axi_interconnect_2_M00_AXI [get_bd_intf_pins axi_interconnect_2/M00_AXI] [get_bd_intf_pins mig_7series_0/S_AXI]
   connect_bd_intf_net -intf_net diff_clock_rtl_0_1 [get_bd_intf_ports pcie_clkin] [get_bd_intf_pins util_ds_buf/CLK_IN_D]
   connect_bd_intf_net -intf_net diff_clock_rtl_1_1 [get_bd_intf_ports sys_clk] [get_bd_intf_pins mig_7series_0/SYS_CLK]
   connect_bd_intf_net -intf_net mig_7series_0_DDR3 [get_bd_intf_ports DDR3] [get_bd_intf_pins mig_7series_0/DDR3]
-  connect_bd_intf_net -intf_net xdma_0_M_AXI [get_bd_intf_pins axi_interconnect_1/S00_AXI] [get_bd_intf_pins xdma_0/M_AXI]
+  connect_bd_intf_net -intf_net xdma_0_M_AXI [get_bd_intf_pins axi_clock_converter_1/S_AXI] [get_bd_intf_pins xdma_0/M_AXI]
   connect_bd_intf_net -intf_net xdma_0_M_AXI_LITE [get_bd_intf_pins axi_interconnect_0/S00_AXI] [get_bd_intf_pins xdma_0/M_AXI_LITE]
   connect_bd_intf_net -intf_net xdma_0_pcie_mgt [get_bd_intf_ports pcie_mgt] [get_bd_intf_pins xdma_0/pcie_mgt]
 
   # Create port connections
   connect_bd_net -net CodeBlinker_3_led [get_bd_ports LED_A1] [get_bd_pins CodeBlinker_3/led]
   connect_bd_net -net GPIO_regs_gpio2_io_o [get_bd_pins xlslice_D0/Din] [get_bd_pins xlslice_D1/Din] [get_bd_pins xlslice_D4_D2/Din]
-  connect_bd_net -net M00_ACLK_1 [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_1/M00_ACLK] [get_bd_pins axi_interconnect_2/S00_ACLK] [get_bd_pins clk_wiz_0/clk_out1] [get_bd_pins firesim_wrapper_0/sys_clk_30]
-  connect_bd_net -net M00_ARESETN_1 [get_bd_pins axi_interconnect_2/M00_ARESETN] [get_bd_pins util_vector_logic_0/Res]
-  connect_bd_net -net M00_ARESETN_2 [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_1/M00_ARESETN] [get_bd_pins axi_interconnect_2/S00_ARESETN] [get_bd_pins clk_wiz_0/locked] [get_bd_pins firesim_wrapper_0/sys_reset_n]
-  connect_bd_net -net S00_ACLK_1 [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins axi_interconnect_1/ACLK] [get_bd_pins axi_interconnect_1/S00_ACLK] [get_bd_pins axi_interconnect_2/ACLK] [get_bd_pins clk_wiz_0/clk_in1] [get_bd_pins xadc_wiz_0/s_axi_aclk] [get_bd_pins xdma_0/axi_aclk]
-  connect_bd_net -net S00_ARESETN_1 [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_interconnect_1/ARESETN] [get_bd_pins axi_interconnect_1/S00_ARESETN] [get_bd_pins axi_interconnect_2/ARESETN] [get_bd_pins clk_wiz_0/resetn] [get_bd_pins xadc_wiz_0/s_axi_aresetn] [get_bd_pins xdma_0/axi_aresetn]
+  connect_bd_net -net M00_ACLK_1 [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_clock_converter_1/m_axi_aclk] [get_bd_pins axi_interconnect_2/S00_ACLK] [get_bd_pins clk_wiz_0/clk_out1] [get_bd_pins firesim_wrapper_0/sys_clk_30] [get_bd_pins proc_sys_reset_0/slowest_sync_clk]
+  connect_bd_net -net M00_ARESETN_1 [get_bd_pins axi_interconnect_2/M00_ARESETN] [get_bd_pins util_vector_logic_0/Res] [get_bd_pins axi_interconnect_2/ARESETN]
+  connect_bd_net -net M00_ARESETN_2 [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_clock_converter_1/m_axi_aresetn] [get_bd_pins axi_interconnect_2/S00_ARESETN] [get_bd_pins proc_sys_reset_0/interconnect_aresetn] [get_bd_pins firesim_wrapper_0/sys_reset_n]
+  connect_bd_net -net S00_ACLK_1 [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins axi_clock_converter_1/s_axi_aclk] [get_bd_pins xadc_wiz_0/s_axi_aclk] [get_bd_pins xdma_0/axi_aclk]
+  connect_bd_net -net S00_ARESETN_1 [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_clock_converter_1/s_axi_aresetn] [get_bd_pins xadc_wiz_0/s_axi_aresetn] [get_bd_pins xdma_0/axi_aresetn]
   connect_bd_net -net const_true1_dout [get_bd_pins CodeBlinker_3/ok] [get_bd_pins const_true1/dout]
   connect_bd_net -net mig_7series_0_init_calib_complete [get_bd_ports LED_A4] [get_bd_pins mig_7series_0/init_calib_complete]
   connect_bd_net -net mig_7series_0_ui_addn_clk_0 [get_bd_pins CodeBlinker_3/clk] [get_bd_pins mig_7series_0/ui_addn_clk_0]
-  connect_bd_net -net mig_7series_0_ui_clk [get_bd_pins axi_interconnect_2/M00_ACLK] [get_bd_pins mig_7series_0/ui_clk]
-  connect_bd_net -net mig_7series_0_ui_clk_sync_rst [get_bd_pins mig_7series_0/ui_clk_sync_rst] [get_bd_pins util_vector_logic_0/Op1]
+  connect_bd_net -net mig_7series_0_ui_clk [get_bd_pins axi_interconnect_2/M00_ACLK] [get_bd_pins mig_7series_0/ui_clk] [get_bd_pins clk_wiz_0/clk_in1] [get_bd_pins axi_interconnect_2/ACLK]
+  connect_bd_net -net mig_7series_0_ui_clk_sync_rst [get_bd_pins mig_7series_0/ui_clk_sync_rst] [get_bd_pins util_vector_logic_0/Op1] [get_bd_pins clk_wiz_0/reset]
   connect_bd_net -net pci_reset_1 [get_bd_ports pci_reset] [get_bd_pins xdma_0/sys_rst_n]
   connect_bd_net -net util_ds_buf_IBUF_OUT [get_bd_pins util_ds_buf/IBUF_OUT] [get_bd_pins xdma_0/sys_clk]
   connect_bd_net -net xadc_wiz_1_temp_out [get_bd_pins mig_7series_0/device_temp_i] [get_bd_pins xadc_wiz_0/temp_out]
   connect_bd_net -net xdma_0_user_lnk_up [get_bd_ports LED_A3] [get_bd_pins xdma_0/user_lnk_up]
-  connect_bd_net -net xlconstant_1_dout [get_bd_ports pcie_clkreq_l] [get_bd_pins xlconstant_1/dout]
-  connect_bd_net -net xlconstant_2_dout [get_bd_pins mig_7series_0/aresetn] [get_bd_pins mig_7series_0/sys_rst] [get_bd_pins xlconstant_2/dout]
+  connect_bd_net -net xlconstant_1_dout [get_bd_ports pcie_clkreq_l] [get_bd_pins xlconstant_1/dout] [get_bd_pins xdma_0/usr_irq_req]
+  connect_bd_net -net xlconstant_2_dout [get_bd_pins mig_7series_0/aresetn] [get_bd_pins mig_7series_0/sys_rst] [get_bd_pins xlconstant_2/dout] [get_bd_pins proc_sys_reset_0/ext_reset_in]
   connect_bd_net -net xlslice_0_Dout [get_bd_ports LED_M2] [get_bd_pins xlslice_D1/Dout]
   connect_bd_net -net xlslice_2_Dout [get_bd_pins CodeBlinker_3/code] [get_bd_pins xlslice_D4_D2/Dout]
   connect_bd_net -net xlslice_D0_Dout [get_bd_ports LED_A2] [get_bd_pins xlslice_D0/Dout]
