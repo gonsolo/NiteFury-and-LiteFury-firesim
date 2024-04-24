@@ -704,8 +704,8 @@ proc write_mig_file_Top_mig_7series_0_0 { str_mig_prj_filepath } {
    CONFIG.PF3_DEVICE_ID_mqdma {9024} \
    CONFIG.PF3_SRIOV_VF_DEVICE_ID {A334} \
    CONFIG.axi_data_width {128_bit} \
-   CONFIG.axil_master_64bit_en {false} \
-   CONFIG.axil_master_prefetchable {false} \
+   CONFIG.axil_master_64bit_en {true} \
+   CONFIG.axil_master_prefetchable {true} \
    CONFIG.axilite_master_en {true} \
    CONFIG.axilite_master_scale {Megabytes} \
    CONFIG.axilite_master_size {32} \
